@@ -45,6 +45,15 @@ pub fn userathost(_: &str) -> String {
     }
 }
 
+#[cfg(feature = "kernel")]
+pub fn kernel(_: &str) -> String {
+    std::fs::read_to_string("/proc/sys/kernel/osrelease")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|_| "unknown".to_string())
+}
+
+// TODO: Fix XBPS.
+// TODO: Implement update checks for other package managers.
 #[cfg(feature = "updates")]
 pub fn updates(manager: &str) -> String {
     let count = match manager {

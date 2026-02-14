@@ -22,7 +22,7 @@ tokio = { version = "1.49.0", features = ["full"] }
 
 [features]
 # Edit the "default" features below to set which components you want to enable
-default = ["datetime", "wifi_custom", "battery_custom", "cpu_perc", "ram_perc", "disk_perc", "updates"]
+default = ["datetime", "wifi_custom", "battery_custom", "cpu_perc", "ram_perc", "temperature_f", "pipewire_icon"]
 
 datetime = ["dep:time"]
 
@@ -54,12 +54,12 @@ disk_used = ["dep:libc"]
 hostname = ["dep:libc"]
 username = ["dep:libc"]
 userathost = ["dep:libc"]
+kernel = []
+# NOTE: Currently, this option does not really work for XBPS and I don't have any other package managers implemented soooo...
 updates = []
 
-pipewire_status = []
-pipewire_perc = []
+temperature_c = []
+temperature_f = []
 
-ipv4 = []
-ipv6 = []
-
-temp = []
+pipewire = []
+pipewire_icon = []

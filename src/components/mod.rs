@@ -38,6 +38,13 @@ pub mod disk;
     feature = "hostname",
     feature = "username",
     feature = "userathost",
+    feature = "kernel",
     feature = "updates"
 ))]
 pub mod system;
+
+#[cfg(any(feature = "temperature_c", feature = "temperature_f"))]
+pub mod temperature;
+
+#[cfg(any(feature = "pipewire", feature = "pipewire_icon",))]
+pub mod audio;

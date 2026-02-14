@@ -24,14 +24,41 @@ use crate::utils::Component;
 // hostname           System hostname            none
 // username           current user's name        none
 // userathost         username@hostname          none
+// kernel             kernel version             none
+// updates            check package updates      the name of your package manager
+// temperature_c      temperature sensor (C)     temperature sensor name (example: /thermal_zone0/temp)
+// temperature_f      temperature sensor (F)     temperature sensor name (example: /thermal_zone0/temp)
+// pipewire           pipewire audio             wpctl sink ID
+// pipewire_icon      pipewire audio + icons     wpctl sink ID
 
 pub const COMPONENTS: &[Component] = &[
+    #[cfg(feature = "temperature_f")]
+    Component {
+        fmt: "[  %s ]",
+        func: crate::components::temperature::temperature_f,
+        arg: Some("thermal_zone0/temp"),
+        interval_s: 5,
+    },
+    #[cfg(feature = "temperature_c")]
+    Component {
+        fmt: "[  %s ]",
+        func: crate::components::temperature::temperature_c,
+        arg: Some("thermal_zone0/temp"),
+        interval_s: 5,
+    },
     #[cfg(feature = "updates")]
     Component {
         fmt: "[   %s ]",
         func: crate::components::system::updates,
         arg: Some("xbps"),
         interval_s: 1800, // NOTE: A high interval is recommended as package queries can be quite expensive.
+    },
+    #[cfg(feature = "kernel")]
+    Component {
+        fmt: "[  %s ]",
+        func: crate::components::system::kernel,
+        arg: None,
+        interval_s: 3600,
     },
     #[cfg(feature = "userathost")]
     Component {
@@ -144,6 +171,20 @@ pub const COMPONENTS: &[Component] = &[
         func: crate::components::cpu::cpu_perc,
         arg: None,
         interval_s: 2, // NOTE: For this component, a low interval is required due to the way CPU usage is calculated.
+    },
+    #[cfg(feature = "pipewire_icon")]
+    Component {
+        fmt: "[ %s ]",
+        func: crate::components::audio::pipewire_icon,
+        arg: Some("@DEFAULT_AUDIO_SINK@"),
+        interval_s: 1,
+    },
+    #[cfg(feature = "pipewire")]
+    Component {
+        fmt: "[ %s ]",
+        func: crate::components::audio::pipewire,
+        arg: Some("@DEFAULT_AUDIO_SINK@"),
+        interval_s: 1,
     },
     #[cfg(feature = "battery_custom")]
     Component {
