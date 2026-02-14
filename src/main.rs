@@ -19,11 +19,20 @@ fn setup(tx: watch::Sender<String>) {
 
             for (i, comp) in config::COMPONENTS.iter().enumerate() {
                 if seconds_passed.is_multiple_of(comp.interval_s) {
-                    cache[i] = (comp.func)(comp.arg.unwrap());
+                    cache[i] = (comp.func)(comp.arg.unwrap_or(""));
                 }
 
-                let formatted = comp.fmt.replace("%s", &cache[i]);
-                buffer.push_str(&formatted);
+                if i > 0 {
+                    buffer.push(' ');
+                }
+
+                if let Some(pos) = comp.fmt.find("%s") {
+                    buffer.push_str(&comp.fmt[..pos]);
+                    buffer.push_str(&cache[i]);
+                    buffer.push_str(&comp.fmt[pos + 2..]);
+                } else {
+                    buffer.push_str(comp.fmt);
+                }
             }
 
             let _ = tx.send(buffer.clone());

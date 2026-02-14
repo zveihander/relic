@@ -2,6 +2,17 @@
 name = "relic"
 version = "0.1.0"
 edition = "2024"
+authors = ["Evan Alvarez <lwq7e50ygv8f1w@tuta.com>"]
+description = "Hyper-minimal slstatus-like program following the suckless philosophy"
+readme = "README.md"
+license = "GPLv3"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
 
 [dependencies]
 cargo-zigbuild = "0.22.0"
@@ -10,13 +21,13 @@ tokio = { version = "1.49.0", features = ["full"] }
 
 [features]
 # Edit the "default" features below to set which components you want to enable
-default = ["datetime"]
+default = ["datetime", "battery_custom", "cpu_perc", "ram_perc"]
 
 datetime = ["dep:time"]
 
 battery_perc = []
-battery_remaining = []
 battery_state = []
+battery_custom = []
 
 cpu_perc = []
 
