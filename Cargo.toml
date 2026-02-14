@@ -4,3 +4,51 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+cargo-zigbuild = "0.22.0"
+time = { version = "0.3.47", features = ["formatting", "local-offset"], optional = true }
+tokio = { version = "1.49.0", features = ["full"] }
+
+[features]
+# Edit the "default" features below to set which components you want to enable
+default = ["datetime"]
+
+datetime = ["dep:time"]
+
+battery_perc = []
+battery_remaining = []
+battery_state = []
+
+cpu_perc = []
+
+ram_free = []
+ram_perc = []
+ram_total = []
+ram_used = []
+
+swap_free = []
+swap_perc = []
+swap_total = []
+swap_used = []
+
+disk_free = []
+disk_perc = []
+disk_total = []
+disk_used = []
+
+hostname = []
+user = []
+
+keyboard_layout = []
+
+package_updates = []
+
+pipewire_status = []
+pipewire_perc = []
+
+ipv4 = []
+ipv6 = []
+
+wifi_ssid = []
+wifi_perc = []
+
+temp = []
