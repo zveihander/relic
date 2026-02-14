@@ -500,6 +500,7 @@ name = "relic"
 version = "0.1.0"
 dependencies = [
  "cargo-zigbuild",
+ "libc",
  "time",
  "tokio",
 ]

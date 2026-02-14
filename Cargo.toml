@@ -16,14 +16,19 @@ strip = true
 
 [dependencies]
 cargo-zigbuild = "0.22.0"
+libc = { version = "0.2.182", optional = true }
 time = { version = "0.3.47", features = ["formatting", "local-offset"], optional = true }
 tokio = { version = "1.49.0", features = ["full"] }
 
 [features]
 # Edit the "default" features below to set which components you want to enable
-default = ["datetime", "battery_custom", "cpu_perc", "ram_perc"]
+default = ["datetime", "wifi_custom", "battery_custom", "cpu_perc", "ram_perc", "disk_perc", "updates"]
 
 datetime = ["dep:time"]
+
+wifi_essid = ["dep:libc"]
+wifi_perc = []
+wifi_custom = ["dep:libc"]
 
 battery_perc = []
 battery_state = []
@@ -41,25 +46,20 @@ swap_perc = []
 swap_total = []
 swap_used = []
 
-disk_free = []
-disk_perc = []
-disk_total = []
-disk_used = []
+disk_free = ["dep:libc"]
+disk_perc = ["dep:libc"]
+disk_total = ["dep:libc"]
+disk_used = ["dep:libc"]
 
-hostname = []
-user = []
-
-keyboard_layout = []
-
-package_updates = []
+hostname = ["dep:libc"]
+username = ["dep:libc"]
+userathost = ["dep:libc"]
+updates = []
 
 pipewire_status = []
 pipewire_perc = []
 
 ipv4 = []
 ipv6 = []
-
-wifi_ssid = []
-wifi_perc = []
 
 temp = []
