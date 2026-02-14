@@ -4,7 +4,7 @@ use crate::utils::Component;
 // NOTE: To use a component, you must first enable it in the "defaults" feature in Cargo.toml
 // component            description                argument (example)
 //
-// datetime             date and time              time format description ([day] [hour]:[minute])
+// datetime             date and time              time format description ([day] [hour]:[minute]). Yes, I know it's weird.
 pub const COMPONENTS: &[Component] = &[
     #[cfg(feature = "datetime")]
     Component {
