@@ -4,6 +4,21 @@ use std::mem;
 
 const IW_ESSID_MAX_SIZE: usize = 32;
 
+// NOTE: Just a small helper to parse ESSIDs
+
+fn parse_ssid(buf: &[u8], len: usize) -> String {
+    let actual_len = len.min(buf.len());
+    if let Ok(parsed) = std::str::from_utf8(&buf[..actual_len]) {
+        let trimmed = parsed.split('\0').next().unwrap_or("").trim();
+        if !trimmed.is_empty() {
+            return trimmed.to_string();
+        }
+    }
+    "Disconnected".to_string()
+}
+
+// NOTE: Im gonna be 100% honest i got really confused with all the unsafe libc bs here so I used a lot of AI for this.
+
 #[cfg(feature = "wifi_essid")]
 pub fn wifi_essid(interface: &str) -> String {
     unsafe {
@@ -46,17 +61,7 @@ pub fn wifi_essid(interface: &str) -> String {
 
         libc::close(fd);
 
-        let actual_len = data.length as usize;
-        let len_to_use = if actual_len > 0 && ssid_buf[actual_len - 1] == 0 {
-            actual_len - 1
-        } else {
-            actual_len
-        };
-
-        std::str::from_utf8(&ssid_buf[..len_to_use.min(IW_ESSID_MAX_SIZE)])
-            .unwrap_or("unknown")
-            .trim()
-            .to_string()
+        parse_ssid(&ssid_buf, data.length as usize)
     }
 }
 
@@ -120,7 +125,7 @@ pub fn wifi_custom(interface: &str) -> String {
             let mut ifr: libc::ifreq = mem::zeroed();
             let if_bytes = interface.as_bytes();
             let len = if_bytes.len().min(libc::IFNAMSIZ - 1);
-            std::ptr::copy_nonoverlapping(if_bytes.as_ptr(), ifr.ifr_name.as_mut_ptr(), len);
+            std::ptr::copy_nonoverlapping(if_bytes.as_ptr(), ifr.ifr_name.as_mut_ptr() as *mut u8, len);
 
             #[repr(C)]
             struct IwPoint {
@@ -129,7 +134,7 @@ pub fn wifi_custom(interface: &str) -> String {
                 flags: u16,
             }
 
-            let data = IwPoint {
+            let mut data = IwPoint {
                 pointer: ssid_buf.as_mut_ptr() as *mut libc::c_void,
                 length: IW_ESSID_MAX_SIZE as u16,
                 flags: 0,
@@ -143,21 +148,9 @@ pub fn wifi_custom(interface: &str) -> String {
 
             const SIOCGIWESSID: libc::c_ulong = 0x8B1B;
             if libc::ioctl(fd, SIOCGIWESSID, &mut ifr) >= 0 {
-                let actual_len = data.length as usize;
-                if actual_len > 0 {
-                    let len_to_use = if ssid_buf[actual_len - 1] == 0 {
-                        actual_len - 1
-                    } else {
-                        actual_len
-                    };
-                    if let Ok(parsed) =
-                        std::str::from_utf8(&ssid_buf[..len_to_use.min(IW_ESSID_MAX_SIZE)])
-                    {
-                        let trimmed = parsed.trim();
-                        if !trimmed.is_empty() {
-                            ssid = trimmed.to_string();
-                        }
-                    }
+                let res = parse_ssid(&ssid_buf, data.length as usize);
+                if res != "Disconnected" {
+                    ssid = res;
                 }
             }
             libc::close(fd);

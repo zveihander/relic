@@ -10,11 +10,16 @@ fn get_wpctl_info(id: &str) -> (f32, bool) {
     let output = Command::new("wpctl").args(["get-volume", target]).output();
 
     if let Ok(out) = output {
-        let s = String::from_utf8_lossy(&out.stdout);
-        let muted = s.contains("[MUTED]");
-        let vol_str = s.split_whitespace().nth(1).unwrap_or("0.0");
+        let muted = out.stdout.windows(7).any(|w| w == b"[MUTED]");
 
-        let vol = vol_str.parse::<f32>().unwrap_or(0.0) * 100.0;
+        let s = std::str::from_utf8(&out.stdout).unwrap_or("");
+        let mut parts = s.split_whitespace();
+        let vol = parts
+            .nth(1)
+            .and_then(|v| v.parse::<f32>().ok())
+            .unwrap_or(0.0)
+            * 100.0;
+
         return (vol, muted);
     }
     (0.0, true)
@@ -24,7 +29,7 @@ fn get_wpctl_info(id: &str) -> (f32, bool) {
 pub fn pipewire(id: &str) -> String {
     let (vol, muted) = get_wpctl_info(id);
     if muted {
-        "MUTED".to_string()
+        "MUTED".into()
     } else {
         format!("{:.0}%", vol)
     }
@@ -35,7 +40,7 @@ pub fn pipewire_icon(id: &str) -> String {
     let (vol, muted) = get_wpctl_info(id);
 
     if muted {
-        return "󰝟 MUTED".to_string();
+        return "󰝟 MUTED".into();
     }
 
     let icon = match vol as u32 {

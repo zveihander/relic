@@ -2,6 +2,7 @@ mod components;
 mod config;
 pub mod utils;
 
+use std::io::{self, Write};
 use tokio::sync::watch;
 use tokio::time::{Duration, interval};
 
@@ -51,6 +52,8 @@ async fn main() {
         if rx.changed().await.is_ok() {
             let current_status = rx.borrow();
             println!("{}", *current_status);
+
+            let _ = io::stdout().flush();
         }
     }
 }
