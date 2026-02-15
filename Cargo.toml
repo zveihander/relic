@@ -1,6 +1,6 @@
 [package]
 name = "relic"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 authors = ["Evan Alvarez <lwq7e50ygv8f1w@tuta.com>"]
 description = "Hyper-minimal slstatus-like program following the suckless philosophy"
