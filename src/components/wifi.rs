@@ -53,8 +53,8 @@ pub fn wifi_essid(interface: &str) -> String {
             mem::size_of::<IwPoint>(),
         );
 
-        const SIOCGIWESSID: libc::c_ulong = 0x8B1B;
-        if libc::ioctl(fd, SIOCGIWESSID, &mut ifr) < 0 {
+        const SIOCGIWESSID: libc::c_int = 0x8B1B;
+        if libc::ioctl(fd, SIOCGIWESSID as _, &mut ifr) < 0 {
             libc::close(fd);
             return "Disconnected".into();
         }
@@ -146,8 +146,8 @@ pub fn wifi_custom(interface: &str) -> String {
                 mem::size_of::<IwPoint>(),
             );
 
-            const SIOCGIWESSID: libc::c_ulong = 0x8B1B;
-            if libc::ioctl(fd, SIOCGIWESSID, &mut ifr) >= 0 {
+            const SIOCGIWESSID: libc::c_int = 0x8B1B;
+            if libc::ioctl(fd, SIOCGIWESSID as _, &mut ifr) >= 0 {
                 let res = parse_ssid(&ssid_buf, data.length as usize);
                 if res != "Disconnected" {
                     ssid = res;
