@@ -17,10 +17,10 @@ for TARGET in $TARGETS; do
         -Z build-std=std,panic_abort -Z build-std-features="optimize_for_size" \
         --release --target "$TARGET"
 
-    BIN_PATH="target/$TARGET/release/abaddon"
+    BIN_PATH="target/$TARGET/release/relic"
 
-    TAR_NAME="abaddon-$VERSION-$TARGET.tar.gz"
-    tar -czf "$OUT_DIR/$TAR_NAME" -C "target/$TARGET/release" abaddon
+    TAR_NAME="relic-$VERSION-$TARGET.tar.gz"
+    tar -czf "$OUT_DIR/$TAR_NAME" -C "target/$TARGET/release" relic
 
     echo "Created: $OUT_DIR/$TAR_NAME"
 done
