@@ -30,8 +30,24 @@ use crate::utils::Component;
 // temperature_f      temperature sensor (F)     temperature sensor name (example: /thermal_zone0/temp)
 // pipewire           pipewire audio             wpctl sink ID
 // pipewire_icon      pipewire audio + icons     wpctl sink ID
+// mpris              playerctl info             none
+// mpris_icon         playerctl info + icons     none
 
 pub const COMPONENTS: &[Component] = &[
+    #[cfg(feature = "mpris_icon")]
+    Component {
+        fmt: "[ %s ]",
+        func: crate::components::mpris::mpris_icon,
+        arg: None,
+        interval_s: 1,
+    },
+    #[cfg(feature = "mpris")]
+    Component {
+        fmt: "[ %s ]",
+        func: crate::components::mpris::mpris,
+        arg: None,
+        interval_s: 1,
+    },
     #[cfg(feature = "temperature_f")]
     Component {
         fmt: "[  %s ]",

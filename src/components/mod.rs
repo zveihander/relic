@@ -48,3 +48,6 @@ pub mod temperature;
 
 #[cfg(any(feature = "pipewire", feature = "pipewire_icon",))]
 pub mod audio;
+
+#[cfg(any(feature = "mpris", feature = "mpris_icon",))]
+pub mod mpris;
