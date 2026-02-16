@@ -118,6 +118,8 @@ file for more details.
 * [cargo-zigbuild](https://github.com/rust-cross/cargo-zigbuild) for the
   excellent solution to cross-building.
 * The Rust `libc` crate maintainers.
-* the [tokio](https://tokio.rs/) crate for making async Rust usable.
-* the [time](https://docs.rs/time/latest/time/) crate for providing a minimal
+* The [tokio](https://tokio.rs/) crate for making async Rust usable.
+* The [time](https://docs.rs/time/latest/time/) crate for providing a minimal
   datetime library.
+* The [mpris](https://docs.rs/time/latest/mpris/) crate, for being a better
+  alternative to playerctl.

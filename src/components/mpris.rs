@@ -1,4 +1,4 @@
-use std::process::Command;
+use mpris::{PlaybackStatus, PlayerFinder};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn util_scroll_text(text: String, max_len: usize) -> String {
@@ -25,20 +25,37 @@ fn util_scroll_text(text: String, max_len: usize) -> String {
 }
 
 fn util_get_mpris_data() -> (String, String) {
-    let output = Command::new("playerctl")
-        .args(["metadata", "--format", "{{status}}|{{artist}} - {{title}}"])
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .unwrap_or_else(|_| "".to_string());
+    let finder = match PlayerFinder::new() {
+        Ok(f) => f,
+        Err(_) => return ("Stopped".to_string(), "".to_string()),
+    };
 
-    if output.is_empty() {
-        return ("Stopped".to_string(), "".to_string());
-    }
+    let player = match finder.find_active() {
+        Ok(p) => p,
+        Err(_) => return ("Stopped".to_string(), "".to_string()),
+    };
 
-    match output.split_once('|') {
-        Some((status, meta)) => (status.to_string(), meta.to_string()),
-        None => ("Stopped".into(), "".into()),
+    let status = match player.get_playback_status() {
+        Ok(PlaybackStatus::Playing) => "Playing",
+        Ok(PlaybackStatus::Paused) => "Paused",
+        _ => "Stopped",
     }
+    .to_string();
+
+    let meta = player
+        .get_metadata()
+        .ok()
+        .map(|m| {
+            let artist = m
+                .artists()
+                .map(|a| a.join(", "))
+                .unwrap_or_else(|| "Unknown".to_string());
+            let title = m.title().unwrap_or("Unknown").to_string();
+            format!("{} - {}", artist, title)
+        })
+        .unwrap_or_default();
+
+    (status, meta)
 }
 
 #[cfg(feature = "mpris")]
@@ -58,7 +75,7 @@ pub fn mpris_icon(max_len: &str) -> String {
     let limit = max_len.parse::<usize>().unwrap_or(20);
 
     if meta.is_empty() {
-        return "󰝛 ".into();
+        return "󰝛".into();
     }
 
     let state_icon = match status.as_str() {

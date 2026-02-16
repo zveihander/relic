@@ -17,6 +17,7 @@ strip = true
 [dependencies]
 cargo-zigbuild = "0.22.0"
 libc = { version = "0.2.182", optional = true }
+mpris = { version = "2.0.1", optional = true }
 time = { version = "0.3.47", features = ["formatting", "local-offset"], optional = true }
 tokio = { version = "1.49.0", features = ["full"] }
 
@@ -64,5 +65,5 @@ temperature_f = []
 pipewire = []
 pipewire_icon = []
 
-mpris = []
-mpris_icon = []
+mpris = ["dep:mpris"]
+mpris_icon = ["dep:mpris"]
