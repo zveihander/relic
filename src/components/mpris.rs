@@ -2,25 +2,26 @@ use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn util_scroll_text(text: String, max_len: usize) -> String {
-    if text.chars().count() <= max_len {
+    let char_count = text.chars().count();
+    if char_count <= max_len {
         return text;
     }
 
     let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
-        .as_secs();
+        .as_secs() as usize;
 
     let text_with_gap = format!("{}   ", text);
     let chars: Vec<char> = text_with_gap.chars().collect();
     let len = chars.len();
-    let offset = (elapsed as usize) % len;
 
-    let mut scrolled = String::new();
-    for i in 0..max_len {
-        scrolled.push(chars[(offset + i) % len]);
-    }
-    scrolled
+    chars
+        .iter()
+        .cycle()
+        .skip(elapsed % len)
+        .take(max_len)
+        .collect()
 }
 
 fn util_get_mpris_data() -> (String, String) {
@@ -34,18 +35,17 @@ fn util_get_mpris_data() -> (String, String) {
         return ("Stopped".to_string(), "".to_string());
     }
 
-    let parts: Vec<&str> = output.splitn(2, '|').collect();
-    (
-        parts.get(0).unwrap_or(&"Stopped").to_string(),
-        parts.get(1).unwrap_or(&"").to_string(),
-    )
+    match output.split_once('|') {
+        Some((status, meta)) => (status.to_string(), meta.to_string()),
+        None => ("Stopped".into(), "".into()),
+    }
 }
 
 #[cfg(feature = "mpris")]
 pub fn mpris(max_len: &str) -> String {
     let (_, meta) = util_get_mpris_data();
     if meta.is_empty() {
-        return "No Media".to_string();
+        return "No Media".into();
     }
 
     let limit = max_len.parse::<usize>().unwrap_or(20);
@@ -58,7 +58,7 @@ pub fn mpris_icon(max_len: &str) -> String {
     let limit = max_len.parse::<usize>().unwrap_or(20);
 
     if meta.is_empty() {
-        return "󰝛".to_string();
+        return "󰝛 ".into();
     }
 
     let state_icon = match status.as_str() {
